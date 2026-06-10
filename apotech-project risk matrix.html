@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Apotech — Project Risk Matrix</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#f8fafc;color:#0f172a;padding:20px 14px}
+.wrap{max-width:640px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.dot{width:8px;height:8px;border-radius:50%;background:#2563eb;flex-shrink:0}
+.brand span{font-size:11px;font-weight:700;letter-spacing:.12em;color:#2563eb;text-transform:uppercase}
+h1{font-size:21px;font-weight:700;margin-bottom:4px}
+.sub{font-size:13px;color:#64748b;margin-bottom:22px}
+.field label{font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:6px}
+.field input[type=text]{width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#0f172a;background:#fff;outline:none;font-family:inherit;-webkit-appearance:none}
+.slabel{font-size:11px;font-weight:700;letter-spacing:.1em;color:#94a3b8;text-transform:uppercase;margin:22px 0 10px}
+.sdesc{font-size:12px;color:#64748b;margin-bottom:12px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 14px;margin-bottom:12px}
+.ctitle{font-size:13px;font-weight:700;color:#0f172a;display:block}
+.cdesc{font-size:12px;color:#94a3b8;display:block;margin-top:2px;margin-bottom:10px}
+/* Radio options as full-width labels */
+.opt{display:flex;align-items:flex-start;gap:10px;padding:8px 8px;border-radius:6px;margin-bottom:4px;border:1.5px solid transparent;cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0);width:100%}
+.opt input[type=radio]{width:16px;height:16px;flex-shrink:0;margin-top:1px;cursor:pointer;accent-color:#2563eb}
+.opt span{font-size:12px;color:#374151;line-height:1.45}
+.wbadge{font-size:10px;font-weight:700;color:#7c3aed;background:#ede9fe;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle}
+.noteinput{margin-top:10px;width:100%;padding:7px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;color:#64748b;background:#f8fafc;outline:none;font-family:inherit;-webkit-appearance:none}
+/* Strategic factors — use button for mobile tap reliability */
+.sf-btn{display:flex;align-items:center;justify-content:space-between;width:100%;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;text-align:left;font-family:inherit;-webkit-tap-highlight-color:rgba(0,0,0,0);transition:background .15s,border-color .15s}
+.sf-btn.on{background:#eff6ff;border-color:#93c5fd}
+.sf-left{display:flex;align-items:center;gap:10px}
+.sf-icon{font-size:18px;flex-shrink:0}
+.sf-name{font-size:13px;font-weight:700;color:#0f172a;display:block}
+.sf-btn.on .sf-name{color:#1d4ed8}
+.sf-desc{font-size:11px;color:#94a3b8;display:block;margin-top:1px}
+.sf-right{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px}
+.pill{font-size:11px;font-weight:700;color:#2563eb;background:#dbeafe;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.chkbox{width:22px;height:22px;border-radius:6px;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.sf-btn.on .chkbox{background:#2563eb}
+/* Progress */
+.prog-row{display:flex;align-items:center;gap:10px;margin:14px 0}
+.prog-track{flex:1;height:4px;background:#e2e8f0;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:#2563eb;border-radius:4px;width:0%;transition:width .3s}
+.prog-txt{font-size:11px;color:#94a3b8;white-space:nowrap}
+/* Breakdown */
+.breakdown{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-top:18px}
+.bd-title{font-size:12px;font-weight:600;color:#374151;margin-bottom:12px}
+.bd-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bd-row.tot{border-top:1px solid #f1f5f9;padding-top:8px;margin-top:4px;margin-bottom:0}
+.bd-label{font-size:11px;width:120px;flex-shrink:0}
+.bd-track{flex:1;height:6px;background:#e2e8f0;border-radius:4px;overflow:hidden}
+.bd-bar{height:100%;border-radius:4px;width:0%;transition:width .4s}
+.bd-val{font-size:11px;font-weight:700;width:48px;text-align:right;flex-shrink:0}
+/* Verdict */
+.verdict{border-radius:12px;padding:16px 16px;margin-top:12px}
+.vt{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.vword{font-size:24px;font-weight:800}
+.vbadge{font-size:11px;font-weight:600;color:#2563eb;background:#dbeafe;padding:3px 10px;border-radius:20px}
+.vnote{font-size:13px;color:#374151}
+.vblock{margin-top:10px;padding-top:10px}
+.vblock-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.vitem{font-size:12px;padding:2px 0}
+/* Action buttons */
+.actions{display:flex;gap:10px;margin-top:14px}
+.abtn{flex:1;padding:13px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+.abtn-blue{background:#2563eb;color:#fff}
+.abtn-dark{background:#0f172a;color:#fff}
+.footer{text-align:center;font-size:11px;color:#cbd5e1;margin-top:26px}
+/* Hidden utility */
+.hidden{display:none!important}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="brand"><div class="dot"></div><span>Apotech Consulting</span></div>
+<h1>Project Risk Matrix</h1>
+<p class="sub">Score each criterion, then apply any strategic mitigating factors.</p>
+
+<div class="field">
+  <label for="rfpName">RFP / Client Name</label>
+  <input type="text" id="rfpName" placeholder="e.g. MedDevice Co. — EU MDR Authorized Rep"/>
+</div>
+
+<div class="slabel">Section 1 — Risk Criteria</div>
+
+<div class="card">
+  <span class="ctitle">Scope Fit <span class="wbadge">× 2 weight</span></span><span class="cdesc">Does the RFP align with our core activities?</span>
+  <label class="opt"><input type="radio" name="scope" value="3" onchange="recalc()"><span>Core activity: GxP audits, Medtech QA/RA, Authorized Rep</span></label>
+  <label class="opt"><input type="radio" name="scope" value="2" onchange="recalc()"><span>Adjacent: RA consulting, gap analysis, CQV, training…</span></label>
+  <label class="opt"><input type="radio" name="scope" value="1" onchange="recalc()"><span>Outside core expertise</span></label>
+  <input class="noteinput" type="text" id="n_scope" placeholder="Note (optional)…"/>
+</div>
+
+<div class="card">
+  <span class="ctitle">Geography <span class="wbadge">× 2 weight</span></span><span class="cdesc">Is the market/region one we actively cover?</span>
+  <label class="opt"><input type="radio" name="geography" value="3" onchange="recalc()"><span>EU / US / established market</span></label>
+  <label class="opt"><input type="radio" name="geography" value="2" onchange="recalc()"><span>Emerging market with some presence</span></label>
+  <label class="opt"><input type="radio" name="geography" value="1" onchange="recalc()"><span>Unfamiliar jurisdiction</span></label>
+  <input class="noteinput" type="text" id="n_geography" placeholder="Note (optional)…"/>
+</div>
+
+<div class="card">
+  <span class="ctitle">Client Profile</span><span class="cdesc">How well do we know this client/industry?</span>
+  <label class="opt"><input type="radio" name="client" value="3" onchange="recalc()"><span>Existing client or known referral</span></label>
+  <label class="opt"><input type="radio" name="client" value="2" onchange="recalc()"><span>New client, known industry</span></label>
+  <label class="opt"><input type="radio" name="client" value="1" onchange="recalc()"><span>New client, unknown industry</span></label>
+  <input class="noteinput" type="text" id="n_client" placeholder="Note (optional)…"/>
+</div>
+
+<div class="card">
+  <span class="ctitle">Bid Response Timeline</span><span class="cdesc">Do we have enough time to write a quality proposal?</span>
+  <label class="opt"><input type="radio" name="timeline_bid" value="3" onchange="recalc()"><span>Ample time to prepare a strong bid</span></label>
+  <label class="opt"><input type="radio" name="timeline_bid" value="2" onchange="recalc()"><span>Tight but feasible with focused effort</span></label>
+  <label class="opt"><input type="radio" name="timeline_bid" value="1" onchange="recalc()"><span>Turnaround too short — quality at risk</span></label>
+  <input class="noteinput" type="text" id="n_timeline_bid" placeholder="Note (optional)…"/>
+</div>
+
+<div class="card">
+  <span class="ctitle">Delivery Timeline</span><span class="cdesc">Can we realistically deliver the work on time?</span>
+  <label class="opt"><input type="radio" name="timeline_delivery" value="3" onchange="recalc()"><span>Realistic timeline, capacity available</span></label>
+  <label class="opt"><input type="radio" name="timeline_delivery" value="2" onchange="recalc()"><span>Challenging but manageable</span></label>
+  <label class="opt"><input type="radio" name="timeline_delivery" value="1" onchange="recalc()"><span>Unrealistic deadline / resource conflict</span></label>
+  <input class="noteinput" type="text" id="n_timeline_delivery" placeholder="Note (optional)…"/>
+</div>
+
+<div class="card">
+  <span class="ctitle">Level of Commitment Expected</span><span class="cdesc">Is this outcome-based or resource-based engagement?</span>
+  <label class="opt"><input type="radio" name="commitment" value="3" onchange="recalc()"><span>Resource-based: time &amp; materials, flexible scope</span></label>
+  <label class="opt"><input type="radio" name="commitment" value="2" onchange="recalc()"><span>Mixed: defined deliverables with some flexibility</span></label>
+  <label class="opt"><input type="radio" name="commitment" value="1" onchange="recalc()"><span>Outcome-based: fixed result, high liability exposure</span></label>
+  <input class="noteinput" type="text" id="n_commitment" placeholder="Note (optional)…"/>
+</div>
+
+<div class="card">
+  <span class="ctitle">Revenue Potential</span><span class="cdesc">Is the contract value worth the bid effort?</span>
+  <label class="opt"><input type="radio" name="revenue" value="3" onchange="recalc()"><span>High value / strategic account</span></label>
+  <label class="opt"><input type="radio" name="revenue" value="2" onchange="recalc()"><span>Medium value</span></label>
+  <label class="opt"><input type="radio" name="revenue" value="1" onchange="recalc()"><span>Low value / one-off</span></label>
+  <input class="noteinput" type="text" id="n_revenue" placeholder="Note (optional)…"/>
+</div>
+
+<div class="card">
+  <span class="ctitle">Technical Complexity</span><span class="cdesc">How complex is the regulatory/QA challenge?</span>
+  <label class="opt"><input type="radio" name="complexity" value="3" onchange="recalc()"><span>Well within our expertise</span></label>
+  <label class="opt"><input type="radio" name="complexity" value="2" onchange="recalc()"><span>Requires some stretch</span></label>
+  <label class="opt"><input type="radio" name="complexity" value="1" onchange="recalc()"><span>High complexity / uncertain</span></label>
+  <input class="noteinput" type="text" id="n_complexity" placeholder="Note (optional)…"/>
+</div>
+
+<div class="card">
+  <span class="ctitle">Competitive Landscape</span><span class="cdesc">What's our chance of winning?</span>
+  <label class="opt"><input type="radio" name="competition" value="3" onchange="recalc()"><span>Strong advantage / preferred supplier</span></label>
+  <label class="opt"><input type="radio" name="competition" value="2" onchange="recalc()"><span>Competitive field, we stand out</span></label>
+  <label class="opt"><input type="radio" name="competition" value="1" onchange="recalc()"><span>Many rivals, low differentiation</span></label>
+  <input class="noteinput" type="text" id="n_competition" placeholder="Note (optional)…"/>
+</div>
+
+<div class="card">
+  <span class="ctitle">Compliance Risk</span><span class="cdesc">Any red flags (liability, ethics, conflict)?</span>
+  <label class="opt"><input type="radio" name="compliance" value="3" onchange="recalc()"><span>No concerns</span></label>
+  <label class="opt"><input type="radio" name="compliance" value="2" onchange="recalc()"><span>Minor concerns, manageable</span></label>
+  <label class="opt"><input type="radio" name="compliance" value="1" onchange="recalc()"><span>Significant legal / ethical risk</span></label>
+  <input class="noteinput" type="text" id="n_compliance" placeholder="Note (optional)…"/>
+</div>
+
+<div class="prog-row">
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+  <span class="prog-txt" id="progTxt">0 / 10</span>
+</div>
+
+<div class="slabel">Section 2 — Strategic Mitigating Factors</div>
+<p class="sdesc">Tap any that apply — bonus points offset risk but won't override a fundamentally weak bid.</p>
+
+<button class="sf-btn" id="sf_us" onclick="toggleSF('us')">
+  <div class="sf-left"><span class="sf-icon">🇺🇸</span><div><span class="sf-name">US Market Entry</span><span class="sf-desc">Helps Apotech establish or strengthen a US footprint</span></div></div>
+  <div class="sf-right"><span class="pill">+3 pts</span><div class="chkbox" id="chk_us"></div></div>
+</button>
+
+<button class="sf-btn" id="sf_land" onclick="toggleSF('land')">
+  <div class="sf-left"><span class="sf-icon">📈</span><div><span class="sf-name">Land &amp; Expand</span><span class="sf-desc">Strong potential to grow into a larger long-term account</span></div></div>
+  <div class="sf-right"><span class="pill">+2 pts</span><div class="chkbox" id="chk_land"></div></div>
+</button>
+
+<button class="sf-btn" id="sf_apotech" onclick="toggleSF('apotech')">
+  <div class="sf-left"><span class="sf-icon">🌐</span><div><span class="sf-name">Apotech International Alignment</span><span class="sf-desc">Supports the Apotech International growth strategy</span></div></div>
+  <div class="sf-right"><span class="pill">+3 pts</span><div class="chkbox" id="chk_apotech"></div></div>
+</button>
+
+<button class="sf-btn" id="sf_service" onclick="toggleSF('service')">
+  <div class="sf-left"><span class="sf-icon">🔧</span><div><span class="sf-name">New Service / Capability</span><span class="sf-desc">Opportunity to develop a replicable new offering</span></div></div>
+  <div class="sf-right"><span class="pill">+2 pts</span><div class="chkbox" id="chk_service"></div></div>
+</button>
+
+<button class="sf-btn" id="sf_ref" onclick="toggleSF('ref')">
+  <div class="sf-left"><span class="sf-icon">⭐</span><div><span class="sf-name">Reference / Showcase Client</span><span class="sf-desc">High-profile client that builds market credibility</span></div></div>
+  <div class="sf-right"><span class="pill">+2 pts</span><div class="chkbox" id="chk_ref"></div></div>
+</button>
+
+<!-- Breakdown -->
+<div class="breakdown hidden" id="breakdown">
+  <div class="bd-title">Score Breakdown</div>
+  <div class="bd-row">
+    <span class="bd-label" style="color:#64748b">Risk score</span>
+    <div class="bd-track"><div class="bd-bar" id="barBase" style="background:#64748b"></div></div>
+    <span class="bd-val" id="valBase" style="color:#374151"></span>
+  </div>
+  <div class="bd-row hidden" id="bonusRow">
+    <span class="bd-label" style="color:#2563eb">Strategic bonus</span>
+    <div class="bd-track"><div class="bd-bar" id="barBonus" style="background:#2563eb"></div></div>
+    <span class="bd-val" id="valBonus" style="color:#2563eb"></span>
+  </div>
+  <div class="bd-row tot">
+    <span class="bd-label" style="font-weight:700;color:#0f172a">Effective score</span>
+    <div class="bd-track"><div class="bd-bar" id="barEff"></div></div>
+    <span class="bd-val" id="valEff"></span>
+  </div>
+</div>
+
+<!-- Verdict -->
+<div class="verdict hidden" id="verdictBox">
+  <div class="vt">
+    <span class="vword" id="verdWord"></span>
+    <span class="vbadge hidden" id="verdBadge"></span>
+  </div>
+  <p class="vnote" id="verdNote"></p>
+  <div class="vblock hidden" id="vStrat">
+    <div class="vblock-label" style="color:#1d4ed8">Strategic Upside</div>
+    <div id="vStratItems"></div>
+  </div>
+  <div class="vblock hidden" id="vFlags">
+    <div class="vblock-label" style="color:#ef4444">⚠ Risk Flags</div>
+    <div id="vFlagItems"></div>
+  </div>
+</div>
+
+<!-- Action buttons -->
+<div class="actions hidden" id="actions">
+  <button class="abtn abtn-blue" onclick="exportPDF()">↓ Export PDF</button>
+  <button class="abtn abtn-dark" onclick="resetAll()">New Assessment</button>
+</div>
+
+<p class="footer">Apotech Consulting · Internal Use</p>
+</div>
+
+<script>
+var FIELDS = ["scope","geography","client","timeline_bid","timeline_delivery","commitment","revenue","complexity","competition","compliance"];
+var LABELS = {scope:"Scope Fit",geography:"Geography",client:"Client Profile",timeline_bid:"Bid Response Timeline",timeline_delivery:"Delivery Timeline",commitment:"Level of Commitment Expected",revenue:"Revenue Potential",complexity:"Technical Complexity",competition:"Competitive Landscape",compliance:"Compliance Risk"};
+var OPTS = {
+  scope:["","Outside core expertise","Adjacent: RA consulting, gap analysis, CQV, training…","Core activity: GxP audits, Medtech QA/RA, Authorized Rep"],
+  geography:["","Unfamiliar jurisdiction","Emerging market with some presence","EU / US / established market"],
+  client:["","New client, unknown industry","New client, known industry","Existing client or known referral"],
+  timeline_bid:["","Turnaround too short — quality at risk","Tight but feasible with focused effort","Ample time to prepare a strong bid"],
+  timeline_delivery:["","Unrealistic deadline / resource conflict","Challenging but manageable","Realistic timeline, capacity available"],
+  commitment:["","Outcome-based: fixed result, high liability exposure","Mixed: defined deliverables with some flexibility","Resource-based: time & materials, flexible scope"],
+  revenue:["","Low value / one-off","Medium value","High value / strategic account"],
+  complexity:["","High complexity / uncertain","Requires some stretch","Well within our expertise"],
+  competition:["","Many rivals, low differentiation","Competitive field, we stand out","Strong advantage / preferred supplier"],
+  compliance:["","Significant legal / ethical risk","Minor concerns, manageable","No concerns"]
+};
+var SF = {
+  us:     {label:"US Market Entry",                 icon:"🇺🇸",bonus:3},
+  land:   {label:"Land & Expand",                   icon:"📈",bonus:2},
+  apotech:{label:"Apotech International Alignment", icon:"🌐",bonus:3},
+  service:{label:"New Service / Capability",        icon:"🔧",bonus:2},
+  ref:    {label:"Reference / Showcase Client",     icon:"⭐",bonus:2}
+};
+var sfOn = {us:false,land:false,apotech:false,service:false,ref:false};
+var WEIGHTS = {scope:2,geography:2,client:1,timeline_bid:1,timeline_delivery:1,commitment:1,revenue:1,complexity:1,competition:1,compliance:1};
+var MAX = 0; for(var _i=0;_i<FIELDS.length;_i++) MAX += WEIGHTS[FIELDS[_i]] * 3;
+
+function getVal(name){
+  var el = document.querySelector('input[name="'+name+'"]:checked');
+  return el ? parseInt(el.value) : null;
+}
+function clr(s){ return s===3?"#22c55e":s===2?"#f59e0b":"#ef4444"; }
+function bg(s){  return s===3?"#f0fdf4":s===2?"#fffbeb":"#fef2f2"; }
+function bdr(s){ return s===3?"#bbf7d0":s===2?"#fde68a":"#fecaca"; }
+
+function show(id){ document.getElementById(id).classList.remove("hidden"); }
+function hide(id){ document.getElementById(id).classList.add("hidden"); }
+function txt(id,t){ document.getElementById(id).textContent=t; }
+function html(id,h){ document.getElementById(id).innerHTML=h; }
+function css(id,prop,val){ document.getElementById(id).style[prop]=val; }
+
+function toggleSF(key){
+  sfOn[key]=!sfOn[key];
+  var btn=document.getElementById("sf_"+key);
+  var chk=document.getElementById("chk_"+key);
+  if(sfOn[key]){btn.classList.add("on");chk.textContent="✓";}
+  else{btn.classList.remove("on");chk.textContent="";}
+  recalc();
+}
+
+function recalc(){
+  var scores=[],i,f;
+  for(i=0;i<FIELDS.length;i++) scores.push(getVal(FIELDS[i]));
+  var answered=0;
+  for(i=0;i<scores.length;i++) if(scores[i]!==null) answered++;
+
+  css("progFill","width",(answered/FIELDS.length*100)+"%");
+  txt("progTxt",answered+" / "+FIELDS.length);
+
+  // Highlight selected options
+  for(i=0;i<FIELDS.length;i++){
+    f=FIELDS[i];
+    var sv=scores[i];
+    var radios=document.querySelectorAll('input[name="'+f+'"]');
+    for(var r=0;r<radios.length;r++){
+      var lbl=radios[r].parentElement;
+      var rv=parseInt(radios[r].value);
+      if(sv!==null&&rv===sv){lbl.style.background=bg(sv);lbl.style.borderColor=bdr(sv);}
+      else{lbl.style.background="transparent";lbl.style.borderColor="transparent";}
+    }
+  }
+
+  if(answered<FIELDS.length){hide("breakdown");hide("verdictBox");hide("actions");return;}
+
+  var base=0;
+  for(i=0;i<scores.length;i++) base += scores[i] * WEIGHTS[FIELDS[i]];
+
+  var bonus=0,sfKeys=Object.keys(sfOn);
+  for(i=0;i<sfKeys.length;i++) if(sfOn[sfKeys[i]]) bonus+=SF[sfKeys[i]].bonus;
+
+  var eff=Math.min(base+bonus,MAX);
+  var ep=eff/MAX;
+  var boosted=bonus>0&&(base/MAX)<0.75&&ep>=0.5;
+  var vd;
+  if(ep>=0.75) vd={label:"BID",color:"#22c55e",bg:"#f0fdf4",border:"#bbf7d0",note:boosted?"Strategic value compensates for risk — proceed, but monitor flagged areas closely.":"Strong fit — proceed with proposal."};
+  else if(ep>=0.5) vd={label:"REVIEW",color:"#f59e0b",bg:"#fffbeb",border:"#fde68a",note:boosted?"Strategic upside noted, but risks remain significant. Define clear mitigation steps before committing.":"Conditional — address flagged risks before committing."};
+  else vd={label:"NO BID",color:"#ef4444",bg:"#fef2f2",border:"#fecaca",note:"Risk profile is too high even accounting for strategic value — pass or renegotiate scope."};
+
+  // Breakdown
+  show("breakdown");
+  css("barBase","width",(base/MAX*100)+"%");
+  txt("valBase",base+"/"+MAX);
+  if(bonus>0){
+    show("bonusRow");
+    css("barBonus","width",Math.min(bonus/MAX*100,100)+"%");
+    txt("valBonus","+"+bonus);
+  } else hide("bonusRow");
+  css("barEff","width",Math.min(eff/MAX*100,100)+"%");
+  css("barEff","background",vd.color);
+  txt("valEff",eff+"/"+MAX);
+  css("valEff","color",vd.color);
+
+  // Verdict
+  show("verdictBox");
+  var vbox=document.getElementById("verdictBox");
+  vbox.style.background=vd.bg;
+  vbox.style.border="1.5px solid "+vd.border;
+  txt("verdWord",vd.label);
+  css("verdWord","color",vd.color);
+  txt("verdNote",vd.note);
+
+  var activeSF=sfKeys.filter(function(k){return sfOn[k];});
+  if(activeSF.length>0){
+    show("verdBadge");
+    txt("verdBadge",activeSF.length+" strategic factor"+(activeSF.length>1?"s":"")+" applied");
+    show("vStrat");
+    document.getElementById("vStrat").style.borderTop="1px solid "+vd.border;
+    html("vStratItems",activeSF.map(function(k){return'<div class="vitem" style="color:#1e40af">'+SF[k].icon+" "+SF[k].label+"</div>";}).join(""));
+  } else {hide("verdBadge");hide("vStrat");}
+
+  var flags=[];
+  for(i=0;i<FIELDS.length;i++) if(scores[i]===1) flags.push(FIELDS[i]);
+  if(flags.length>0){
+    show("vFlags");
+    document.getElementById("vFlags").style.borderTop="1px solid "+vd.border;
+    html("vFlagItems",flags.map(function(f){
+      var n=document.getElementById("n_"+f);
+      var nv=n?n.value:"";
+      return'<div class="vitem" style="color:#b91c1c">• '+LABELS[f]+(nv?" — "+nv:"")+"</div>";
+    }).join(""));
+  } else hide("vFlags");
+
+  show("actions");
+}
+
+function resetAll(){
+  document.getElementById("rfpName").value="";
+  var radios=document.querySelectorAll("input[type=radio]");
+  for(var i=0;i<radios.length;i++) radios[i].checked=false;
+  var opts=document.querySelectorAll(".opt");
+  for(var i=0;i<opts.length;i++){opts[i].style.background="transparent";opts[i].style.borderColor="transparent";}
+  var notes=document.querySelectorAll(".noteinput");
+  for(var i=0;i<notes.length;i++) notes[i].value="";
+  var sfKeys=Object.keys(sfOn);
+  for(var i=0;i<sfKeys.length;i++){
+    sfOn[sfKeys[i]]=false;
+    document.getElementById("sf_"+sfKeys[i]).classList.remove("on");
+    document.getElementById("chk_"+sfKeys[i]).textContent="";
+  }
+  css("progFill","width","0%");
+  txt("progTxt","0 / 10");
+  hide("breakdown");hide("verdictBox");hide("actions");
+}
+
+function exportPDF(){
+  var rfpName=document.getElementById("rfpName").value||"Untitled RFP";
+  var date=new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"});
+  var scores=FIELDS.map(function(f){return getVal(f);});
+  var base=scores.reduce(function(a,b,i){return a+b*WEIGHTS[FIELDS[i]];},0);
+  var sfKeys=Object.keys(sfOn);
+  var bonus=sfKeys.filter(function(k){return sfOn[k];}).reduce(function(a,k){return a+SF[k].bonus;},0);
+  var eff=Math.min(base+bonus,MAX);
+  var ep=eff/MAX;
+  var boosted=bonus>0&&(base/MAX)<0.75&&ep>=0.5;
+  var vd;
+  if(ep>=0.75) vd={label:"BID",color:"#16a34a",bg:"#f0fdf4",border:"#bbf7d0",note:boosted?"Strategic value compensates for risk — proceed, but monitor flagged areas closely.":"Strong fit — proceed with proposal."};
+  else if(ep>=0.5) vd={label:"REVIEW",color:"#d97706",bg:"#fffbeb",border:"#fde68a",note:boosted?"Strategic upside noted, but risks remain significant. Define clear mitigation steps before committing.":"Conditional — address flagged risks before committing."};
+  else vd={label:"NO BID",color:"#dc2626",bg:"#fef2f2",border:"#fecaca",note:"Risk profile is too high even accounting for strategic value — pass or renegotiate scope."};
+  var activeSF=sfKeys.filter(function(k){return sfOn[k];});
+  var flagFields=FIELDS.filter(function(f){return getVal(f)===1;});
+  var rows=FIELDS.map(function(f,i){
+    var s=scores[i],dot=s===3?"#22c55e":s===2?"#f59e0b":"#ef4444";
+    var n=document.getElementById("n_"+f);var nv=n?n.value:"";
+    return"<tr><td style='padding:8px 10px;border-bottom:1px solid #f1f5f9;font-weight:600;font-size:12px;width:26%'>"+LABELS[f]+"</td>"
+      +"<td style='padding:8px 10px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#374151;width:54%'>"
+      +"<span style='display:inline-block;width:8px;height:8px;border-radius:50%;background:"+dot+";margin-right:6px;vertical-align:middle'></span>"+OPTS[f][s]
+      +(nv?"<div style='font-size:11px;color:#94a3b8;margin-top:3px;font-style:italic'>"+nv+"</div>":"")
+      +"</td><td style='padding:8px 10px;border-bottom:1px solid #f1f5f9;text-align:center;font-weight:700;font-size:13px;color:"+dot+";width:20%'>"+s+"/3</td></tr>";
+  }).join("");
+  var sfRows=sfKeys.map(function(k){
+    var a=sfOn[k];
+    return"<tr><td style='padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:12px;color:#374151'>"+SF[k].icon+" "+SF[k].label+"</td>"
+      +"<td style='padding:7px 10px;border-bottom:1px solid #f1f5f9;text-align:center;font-weight:700;font-size:12px;color:"+(a?"#2563eb":"#cbd5e1")+"'>"+(a?"+"+SF[k].bonus:"—")+"</td></tr>";
+  }).join("");
+  var fHtml=flagFields.length>0?"<div style='margin-top:16px;padding:12px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px'><div style='font-size:11px;font-weight:700;color:#dc2626;text-transform:uppercase;margin-bottom:6px'>⚠ Risk Flags</div>"+flagFields.map(function(f){return"<div style='font-size:12px;color:#b91c1c;padding:2px 0'>• "+LABELS[f]+"</div>";}).join("")+"</div>":"";
+  var sHtml=activeSF.length>0?"<div style='margin-top:12px;padding:12px 16px;background:#eff6ff;border:1px solid #93c5fd;border-radius:8px'><div style='font-size:11px;font-weight:700;color:#1d4ed8;text-transform:uppercase;margin-bottom:6px'>Strategic Upside Applied</div>"+activeSF.map(function(k){return"<div style='font-size:12px;color:#1e40af;padding:2px 0'>"+SF[k].icon+" "+SF[k].label+"</div>";}).join("")+"</div>":"";
+  var h="<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Project Risk Matrix — "+rfpName+"</title>"
+    +"<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:13px;color:#0f172a}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head>"
+    +"<body><div style='max-width:760px;margin:0 auto;padding:40px'>"
+    +"<div style='display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:18px;border-bottom:2px solid #0f172a'>"
+    +"<div><div style='font-size:10px;font-weight:700;letter-spacing:.14em;color:#2563eb;text-transform:uppercase;margin-bottom:4px'>Apotech Consulting · Internal Use</div>"
+    +"<div style='font-size:22px;font-weight:800'>Project Risk Matrix</div><div style='font-size:14px;color:#64748b;margin-top:4px'>"+rfpName+"</div></div>"
+    +"<div style='text-align:right'><div style='font-size:10px;color:#94a3b8;text-transform:uppercase'>Date</div><div style='font-size:13px;font-weight:600'>"+date+"</div></div></div>"
+    +"<div style='background:"+vd.bg+";border:2px solid "+vd.border+";border-radius:10px;padding:18px 20px;margin-bottom:24px'>"
+    +"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:6px'>"
+    +"<span style='font-size:26px;font-weight:800;color:"+vd.color+"'>"+vd.label+"</span>"
+    +"<div style='text-align:right'><div style='font-size:11px;color:#94a3b8;text-transform:uppercase'>Effective Score</div>"
+    +"<div style='font-size:20px;font-weight:800;color:"+vd.color+"'>"+eff+" / "+MAX+"</div></div></div>"
+    +"<div style='font-size:13px;color:#374151'>"+vd.note+"</div>"
+    +"<div style='margin-top:12px;padding-top:12px;border-top:1px solid "+vd.border+"'>"
+    +"<span style='font-size:11px;color:#64748b'>Risk score: </span><span style='font-weight:700;color:#374151'>"+base+"/"+MAX+"</span>"
+    +(bonus>0?" &nbsp;&nbsp;<span style='font-size:11px;color:#2563eb'>Strategic bonus: </span><span style='font-weight:700;color:#2563eb'>+"+bonus+"</span>":"")
+    +"</div></div>"
+    +"<div style='font-size:10px;font-weight:700;letter-spacing:.1em;color:#94a3b8;text-transform:uppercase;margin-bottom:8px'>Section 1 — Risk Criteria</div>"
+    +"<table style='width:100%;border-collapse:collapse;margin-bottom:24px'><thead><tr style='background:#f8fafc'>"
+    +"<th style='padding:8px 10px;text-align:left;font-size:11px;color:#64748b;border-bottom:2px solid #e2e8f0'>Criterion</th>"
+    +"<th style='padding:8px 10px;text-align:left;font-size:11px;color:#64748b;border-bottom:2px solid #e2e8f0'>Assessment</th>"
+    +"<th style='padding:8px 10px;text-align:center;font-size:11px;color:#64748b;border-bottom:2px solid #e2e8f0'>Score</th>"
+    +"</tr></thead><tbody>"+rows+"</tbody></table>"
+    +"<div style='font-size:10px;font-weight:700;letter-spacing:.1em;color:#94a3b8;text-transform:uppercase;margin-bottom:8px'>Section 2 — Strategic Mitigating Factors</div>"
+    +"<table style='width:100%;border-collapse:collapse;margin-bottom:20px'><thead><tr style='background:#f8fafc'>"
+    +"<th style='padding:8px 10px;text-align:left;font-size:11px;color:#64748b;border-bottom:2px solid #e2e8f0'>Factor</th>"
+    +"<th style='padding:8px 10px;text-align:center;font-size:11px;color:#64748b;border-bottom:2px solid #e2e8f0'>Bonus Applied</th>"
+    +"</tr></thead><tbody>"+sfRows+"</tbody></table>"
+    +fHtml+sHtml
+    +"<div style='margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between'>"
+    +"<div style='font-size:10px;color:#cbd5e1'>Apotech Consulting · Confidential · Internal Use Only</div>"
+    +"<div style='font-size:10px;color:#cbd5e1'>apotechconsulting.com</div></div></div></body></html>";
+  var w=window.open("","_blank");
+  w.document.write(h);w.document.close();
+  w.onload=function(){setTimeout(function(){w.print();},500);};
+}
+</script>
+</body>
+</html>
